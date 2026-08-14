@@ -74,7 +74,14 @@ def main(args):
         np.save(log_dir / "database_descriptors.npy", database_descriptors)
 
     # Use a kNN to find predictions
+    if args.distance_metric == "L2":
     faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
+
+elif args.distance_metric == "dotproduct":
+    faiss_index = faiss.IndexFlatIP(args.descriptors_dimension)
+
+else:
+    raise ValueError(f"Unsupported distance metric: {args.distance_metric}")
     faiss_index.add(database_descriptors)
     del database_descriptors, all_descriptors
 
