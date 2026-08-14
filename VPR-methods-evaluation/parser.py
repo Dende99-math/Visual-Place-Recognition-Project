@@ -64,6 +64,13 @@ def parse_arguments():
         default=[1, 5, 10, 20],
         help="values for recall (e.g. recall@1, recall@5)",
     )
+        parser.add_argument(
+        "--distance_metric",
+        type=str,
+        default="L2",
+        choices=["L2", "dotproduct"],
+        help="distance metric used for nearest-neighbor retrieval",
+    )
     parser.add_argument(
         "--no_labels",
         action="store_true",
