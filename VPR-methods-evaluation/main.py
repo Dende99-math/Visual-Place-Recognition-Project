@@ -73,8 +73,9 @@ def main(args):
         np.save(log_dir / "queries_descriptors.npy", queries_descriptors)
         np.save(log_dir / "database_descriptors.npy", database_descriptors)
 
+    
     # Use a kNN to find predictions
-    if args.distance_metric == "L2":
+if args.distance_metric == "L2":
     faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
 
 elif args.distance_metric == "dotproduct":
@@ -82,8 +83,9 @@ elif args.distance_metric == "dotproduct":
 
 else:
     raise ValueError(f"Unsupported distance metric: {args.distance_metric}")
-    faiss_index.add(database_descriptors)
-    del database_descriptors, all_descriptors
+
+faiss_index.add(database_descriptors)
+del database_descriptors, all_descriptors
 
     logger.debug("Calculating recalls")
     distances, predictions = faiss_index.search(queries_descriptors, max(args.recall_values))
