@@ -94,7 +94,7 @@ class ResNet(nn.Module):
     """
     ResNet-50 backbone for MixVPR.
 
-    The network is cropped before layer4.
+    The backbone is cropped before layer4.
     With an input image of size 320x320, it outputs
     a feature map of shape [B, 1024, 20, 20].
     """
@@ -102,26 +102,24 @@ class ResNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        resnet = torchvision.models.resnet50(weights=None)
+        # Create the standard ResNet-50 architecture.
+        self.model = torchvision.models.resnet50(weights=None)
 
-        self.conv1 = resnet.conv1
-        self.bn1 = resnet.bn1
-        self.relu = resnet.relu
-        self.maxpool = resnet.maxpool
-
-        self.layer1 = resnet.layer1
-        self.layer2 = resnet.layer2
-        self.layer3 = resnet.layer3
+        # MixVPR uses the backbone only up to layer3.
+        # layer4, avgpool and fc are not used.
+        self.model.layer4 = nn.Identity()
+        self.model.avgpool = nn.Identity()
+        self.model.fc = nn.Identity()
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
+        x = self.model.conv1(x)
+        x = self.model.bn1(x)
+        x = self.model.relu(x)
+        x = self.model.maxpool(x)
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
+        x = self.model.layer1(x)
+        x = self.model.layer2(x)
+        x = self.model.layer3(x)
 
         return x
 
